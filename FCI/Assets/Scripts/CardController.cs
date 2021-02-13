@@ -4,15 +4,21 @@ using UnityEngine;
 
 public class CardController : MonoBehaviour {
     
+    // References
+    private Vector3 ogPos;
+    private Vector3 touchPos;
+
     // Vars for detecting mouse position.
     private Vector3 screenSpace;
     private Vector3 offset;
 
-    // Start is called before the first frame update
-    void Start() {
-    }
+    private bool touch;
 
-    // Source: https://www.codegrepper.com/code-examples/csharp/how+to+get+2D+object+drag+with+mouse+unity
+    void Start() {
+        ogPos = transform.position;
+    } 
+
+    // Source used for OnMouseDown and Drag: https://www.codegrepper.com/code-examples/csharp/how+to+get+2D+object+drag+with+mouse+unity
     void OnMouseDown() {
         //translate the cubes position from the world to Screen Point
         screenSpace = Camera.main.WorldToScreenPoint(transform.position);
@@ -23,7 +29,7 @@ public class CardController : MonoBehaviour {
  
     // OnMouseDrag is called when the user has clicked on a GUIElement or Collider and is still holding down the mouse.
     // OnMouseDrag is called every frame while the mouse is down.
-    void OnMouseDrag () {
+    void OnMouseDrag() {
     
         //keep track of the mouse position
         var curScreenSpace = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z);    
@@ -35,7 +41,22 @@ public class CardController : MonoBehaviour {
         transform.position = curPosition;
     }
 
+    void OnMouseUp() {
+        //If touch true, put it at the position of the triggered object. Otherwise, set it to the original position.
+        if (touch == true){
+            transform.position = touchPos;
+        } else {
+            transform.position = ogPos;
+        }
+    }
+
     void OnTriggerEnter2D(Collider2D other) {
-        Debug.Log("Touch");
+        touch = true;
+        touchPos = other.transform.position;
+        print(touchPos);
+    }
+
+    void OnTriggerExit2D(Collider2D other) {
+        touch = false;
     }
 }
