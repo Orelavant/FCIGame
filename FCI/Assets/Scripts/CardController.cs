@@ -4,31 +4,36 @@ using UnityEngine;
 
 public class CardController : MonoBehaviour {
     
-    // References
+    //References
     private Vector3 ogPos;
-    private Vector3 touchPos;
+    private Vector3 otherPos;
+    private GameObject otherCard;
 
-    // Vars for detecting mouse position.
+    //Vars for detecting mouse position.
     private Vector3 screenSpace;
     private Vector3 offset;
 
+    //Bools
     private bool touch;
+    private bool move;
 
     void Start() {
         ogPos = transform.position;
     } 
 
-    // Source used for OnMouseDown and Drag: https://www.codegrepper.com/code-examples/csharp/how+to+get+2D+object+drag+with+mouse+unity
+    //Source used for OnMouseDown and Drag: https://www.codegrepper.com/code-examples/csharp/how+to+get+2D+object+drag+with+mouse+unity
     void OnMouseDown() {
         //translate the cubes position from the world to Screen Point
         screenSpace = Camera.main.WorldToScreenPoint(transform.position);
         
         //calculate any difference between the cubes world position and the mouses Screen position converted to a world point  
-        offset = transform.position - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x,Input.mousePosition.y, screenSpace.z));  
+        offset = transform.position - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x,Input.mousePosition.y, screenSpace.z));
+
+        move = true;  
     }
  
-    // OnMouseDrag is called when the user has clicked on a GUIElement or Collider and is still holding down the mouse.
-    // OnMouseDrag is called every frame while the mouse is down.
+    //OnMouseDrag is called when the user has clicked on a GUIElement or Collider and is still holding down the mouse.
+    //OnMouseDrag is called every frame while the mouse is down.
     void OnMouseDrag() {
     
         //keep track of the mouse position
@@ -42,21 +47,35 @@ public class CardController : MonoBehaviour {
     }
 
     void OnMouseUp() {
-        //If touch true, put it at the position of the triggered object. Otherwise, set it to the original position.
+        move = false;
+
+        //If touch true, replace the other card. Otherwise, set it to the original position.
         if (touch == true){
-            transform.position = touchPos;
+            transform.position = otherPos;
+            Destroy(otherCard);
+            ogPos = otherPos;
         } else {
             transform.position = ogPos;
         }
     }
 
-    void OnTriggerEnter2D(Collider2D other) {
+    void OnTriggerStay2D(Collider2D other) {
+        // Getting position and card in case of mouse release.
         touch = true;
-        touchPos = other.transform.position;
-        print(touchPos);
+        otherPos = other.transform.position;
+        otherCard = other.gameObject;
+
+        // Give border outline to indicate which card is being touched atm.
+        if (move == true) {
+            var otherCard = other.GetComponent<Renderer>();
+            otherCard.material.SetColor("_Color", Color.red);
+        }
     }
 
     void OnTriggerExit2D(Collider2D other) {
         touch = false;
+
+        var otherCard = other.GetComponent<Renderer>();
+        otherCard.material.SetColor("_Color", Color.green);
     }
 }
