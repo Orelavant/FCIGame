@@ -17,9 +17,11 @@ public class CardController : MonoBehaviour {
     private bool touch;
     private bool move;
 
+    
     void Start() {
         ogPos = transform.position;
     } 
+
 
     //Source used for OnMouseDown and Drag: https://www.codegrepper.com/code-examples/csharp/how+to+get+2D+object+drag+with+mouse+unity
     void OnMouseDown() {
@@ -31,6 +33,7 @@ public class CardController : MonoBehaviour {
 
         move = true;  
     }
+
  
     //OnMouseDrag is called when the user has clicked on a GUIElement or Collider and is still holding down the mouse.
     //OnMouseDrag is called every frame while the mouse is down.
@@ -46,6 +49,7 @@ public class CardController : MonoBehaviour {
         transform.position = curPosition;
     }
 
+
     void OnMouseUp() {
         move = false;
 
@@ -59,6 +63,7 @@ public class CardController : MonoBehaviour {
         }
     }
 
+
     void OnTriggerStay2D(Collider2D other) {
         // Getting position and card in case of mouse release.
         touch = true;
@@ -71,6 +76,7 @@ public class CardController : MonoBehaviour {
             otherCard.material.SetColor("_Color", Color.red);
         }
     }
+    
 
     void OnTriggerExit2D(Collider2D other) {
         touch = false;
